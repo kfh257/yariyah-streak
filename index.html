@@ -11,11 +11,10 @@
             --gold-accent: #d4af37;
             --gold-glow: #f39c12;
             --text-color: #f8fafc;
-            --muted-text: #94a3b8;
         }
 
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #05070c 0%, #111827 50%, #1e1b4b 100%);
             color: var(--text-color);
             margin: 0;
@@ -27,30 +26,9 @@
             box-sizing: border-box;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .crown-main {
-            font-size: 3.5rem;
-            margin-bottom: 5px;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        h1 {
-            color: var(--gold-accent);
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
-            text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
-            letter-spacing: 1px;
-        }
+        header { text-align: center; margin-bottom: 30px; }
+        .crown-main { font-size: 3.5rem; margin-bottom: 5px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6)); }
+        h1 { color: var(--gold-accent); margin: 0 0 10px 0; font-size: 2.2rem; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4); }
 
         .timer-box {
             background: rgba(30, 41, 59, 0.7);
@@ -59,9 +37,7 @@
             border-radius: 30px;
             font-weight: bold;
             display: inline-block;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(8px);
-            color: #f1f5f9;
         }
 
         .cards-container {
@@ -71,7 +47,6 @@
             justify-content: center;
             width: 100%;
             max-width: 1100px;
-            margin-top: 10px;
         }
 
         .user-card {
@@ -80,99 +55,40 @@
             border-radius: 20px;
             padding: 25px 20px;
             width: 300px;
-            box-sizing: border-box;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.15);
             backdrop-filter: blur(10px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        .user-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.3);
-        }
-
-        .card-icon {
-            font-size: 2.8rem;
-            text-align: center;
-            margin-bottom: 5px;
-            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
-        }
-
-        .user-card h2 {
-            text-align: center;
-            margin: 0 0 10px 0;
-            color: #ffffff;
-            font-size: 1.6rem;
-        }
-
-        .streak-num {
-            font-size: 2.6rem;
-            font-weight: bold;
-            color: var(--gold-glow);
-            text-align: center;
-            margin: 10px 0;
-            text-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
-        }
+        .card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 5px; }
+        .user-card h2 { text-align: center; margin: 0 0 10px 0; font-size: 1.6rem; }
+        .streak-num { font-size: 2.6rem; font-weight: bold; color: var(--gold-glow); text-align: center; margin: 10px 0; }
 
         input, textarea, button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 10px;
-            border: 1px solid #334155;
-            background: rgba(15, 23, 42, 0.8);
-            color: white;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
+            border: 1px solid #334155; background: rgba(15, 23, 42, 0.8);
+            color: white; box-sizing: border-box; font-family: inherit;
         }
 
         button {
             background: linear-gradient(45deg, #d4af37, #f39c12);
-            color: #000;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            border: none;
-            margin-top: 12px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
-
-        button:hover {
-            opacity: 0.95;
-            transform: scale(1.02);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
+            color: #000; font-weight: bold; cursor: pointer; border: none; margin-top: 12px;
         }
 
         .status-done {
-            color: #4ade80;
-            font-weight: bold;
-            text-align: center;
-            padding: 8px;
-            background: rgba(74, 222, 128, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(74, 222, 128, 0.2);
-            margin: 10px 0;
+            color: #4ade80; font-weight: bold; text-align: center; padding: 8px;
+            background: rgba(74, 222, 128, 0.1); border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2);
         }
 
         .proof-text {
-            background: rgba(15, 23, 42, 0.9);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            word-break: break-all;
-            border-right: 3px solid var(--gold-accent);
-            color: #cbd5e1;
+            background: rgba(15, 23, 42, 0.9); padding: 12px; border-radius: 8px;
+            font-size: 0.9rem; word-break: break-all; border-right: 3px solid var(--gold-accent);
         }
     </style>
+
+    <!-- Firebase SDK Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -185,7 +101,20 @@
     <main class="cards-container" id="cardsContainer"></main>
 
     <script>
-        // قائمة الشخصيات الإمبراطورية الـ 3
+        // إعدادات مشروعك في Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrLwyl_kKN4Zq4PQ6JFTFKc4NAdDmR8RY",
+            authDomain: "yariyah-streak.firebaseapp.com",
+            databaseURL: "https://yariyah-streak-default-rtdb.firebaseio.com",
+            projectId: "yariyah-streak",
+            storageBucket: "yariyah-streak.firebasestorage.app",
+            messagingSenderId: "585593636126",
+            appId: "1:585593636126:web:73816052f9ab937fb9b50f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const users = [
             { id: "user1", name: "الإمبراطور", icon: "👑" },
             { id: "user2", name: "الإمبراطورة", icon: "👸" },
@@ -202,32 +131,30 @@
             return d.toISOString().split('T')[0];
         }
 
-        // فحص وتصفير الـ Streak عند تفويت يوم (12 بالليل)
-        function verifyStreaks() {
-            const today = getToday();
-            const yesterday = getYesterday();
+        database.ref('usersData').on('value', (snapshot) => {
+            const cloudData = snapshot.val() || {};
+            renderUI(cloudData);
+        });
 
-            users.forEach(u => {
-                let lastDate = localStorage.getItem(`${u.id}_last_date`);
-                if (lastDate && lastDate !== today && lastDate !== yesterday) {
-                    localStorage.setItem(`${u.id}_streak`, 0);
-                }
-            });
-        }
-
-        // بناء الواجهة الإمبراطورية
-        function renderUI() {
-            verifyStreaks();
+        function renderUI(cloudData) {
             const container = document.getElementById("cardsContainer");
             container.innerHTML = "";
             const today = getToday();
+            const yesterday = getYesterday();
 
             users.forEach(user => {
-                const streak = localStorage.getItem(`${user.id}_streak`) || 0;
-                const lastDate = localStorage.getItem(`${user.id}_last_date`);
-                const isDoneToday = (lastDate === today);
-                const savedProof = localStorage.getItem(`${user.id}_proof_${today}`) || "";
+                const uData = cloudData[user.id] || {};
+                let streak = uData.streak || 0;
+                let lastDate = uData.lastDate || "";
+                let pass = uData.pass || "";
+                let proof = uData.proof || "";
 
+                if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
+                    streak = 0;
+                    database.ref(`usersData/${user.id}/streak`).set(0);
+                }
+
+                const isDoneToday = (lastDate === today);
                 const card = document.createElement("div");
                 card.className = "user-card";
 
@@ -237,8 +164,8 @@
                         <h2>${user.name}</h2>
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         <div class="status-done">✅ تم إنجاز المذاكرة الملكية اليوم!</div>
-                        <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الانجاز:</p>
-                        <div class="proof-text">${savedProof}</div>
+                        <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الإنجاز:</p>
+                        <div class="proof-text">${proof}</div>
                     `;
                 } else {
                     card.innerHTML = `
@@ -247,15 +174,14 @@
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
                         <textarea id="proof_${user.id}" placeholder="إثبات المذاكرة (ماذا أنجزت اليوم؟)..."></textarea>
-                        <button onclick="checkIn('${user.id}')">تسجيل المذاكرة اليوم</button>
+                        <button onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
                     `;
                 }
                 container.appendChild(card);
             });
         }
 
-        // تسجيل الدخول والـ Streak
-        function checkIn(userId) {
+        function checkIn(userId, savedPass, currentStreak) {
             const passInput = document.getElementById(`pass_${userId}`).value;
             const proofInput = document.getElementById(`proof_${userId}`).value.trim();
 
@@ -264,10 +190,8 @@
                 return;
             }
 
-            let savedPass = localStorage.getItem(`${userId}_pass`);
             if (!savedPass) {
-                localStorage.setItem(`${userId}_pass`, passInput);
-                savedPass = passInput;
+                database.ref(`usersData/${userId}/pass`).set(passInput);
             } else if (savedPass !== passInput) {
                 alert("كلمة السر خاطئة!");
                 return;
@@ -279,17 +203,16 @@
             }
 
             const today = getToday();
-            let currentStreak = parseInt(localStorage.getItem(`${userId}_streak`) || "0");
 
-            localStorage.setItem(`${userId}_streak`, currentStreak + 1);
-            localStorage.setItem(`${userId}_last_date`, today);
-            localStorage.setItem(`${userId}_proof_${today}`, proofInput);
+            database.ref(`usersData/${userId}`).update({
+                streak: currentStreak + 1,
+                lastDate: today,
+                proof: proofInput
+            });
 
-            alert("كفو! تم تسجيل المذاكرة واحتساب الـ Streak الملكي 🔥👑");
-            renderUI();
+            alert("كفو! تم تسجيل المذاكرة واحتساب الـ Streak السحابي الملكي 🔥👑");
         }
 
-        // عداد منتصف الليل (الساعة 12)
         function startMidnightTimer() {
             function update() {
                 const now = new Date();
@@ -309,7 +232,6 @@
         }
 
         startMidnightTimer();
-        renderUI();
     </script>
 </body>
 </html>
