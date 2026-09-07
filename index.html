@@ -54,7 +54,7 @@
             border: 2px solid var(--gold-accent);
             border-radius: 20px;
             padding: 25px 20px;
-            width: 300px;
+            width: 320px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.15);
             backdrop-filter: blur(10px);
             box-sizing: border-box;
@@ -101,7 +101,6 @@
     <main class="cards-container" id="cardsContainer"></main>
 
     <script>
-        // إعدادات مشروعك في Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBrLwyl_kKN4Zq4PQ6JFTFKc4NAdDmR8RY",
             authDomain: "yariyah-streak.firebaseapp.com",
@@ -115,20 +114,29 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // قائمة المستخدمين (مستخدمين اثنين فقط)
         const users = [
             { id: "user1", name: "الإمبراطور", icon: "👑" },
-            { id: "user2", name: "الإمبراطورة", icon: "👸" },
-            { id: "user3", name: "السلطانة", icon: "⚜️" }
+            { id: "user2", name: "الإمبراطورة", icon: "👸" }
         ];
 
+        // جلب تاريخ اليوم بالتوقيت المحلي (توقيت السعودية)
         function getToday() {
-            return new Date().toISOString().split('T')[0];
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
+        // جلب تاريخ الأمس بالتوقيت المحلي
         function getYesterday() {
             const d = new Date();
             d.setDate(d.getDate() - 1);
-            return d.toISOString().split('T')[0];
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         database.ref('usersData').on('value', (snapshot) => {
