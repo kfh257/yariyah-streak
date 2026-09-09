@@ -114,7 +114,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // قائمة المستخدمين (مستخدمين اثنين فقط)
+        // قائمة المستخدمين
         const users = [
             { id: "user1", name: "الإمبراطور", icon: "👑" },
             { id: "user2", name: "الإمبراطورة", icon: "👸" }
@@ -123,16 +123,6 @@
         // جلب تاريخ اليوم بالتوقيت المحلي (توقيت السعودية)
         function getToday() {
             const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // جلب تاريخ الأمس بالتوقيت المحلي
-        function getYesterday() {
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
@@ -148,7 +138,6 @@
             const container = document.getElementById("cardsContainer");
             container.innerHTML = "";
             const today = getToday();
-            const yesterday = getYesterday();
 
             users.forEach(user => {
                 const uData = cloudData[user.id] || {};
@@ -156,11 +145,6 @@
                 let lastDate = uData.lastDate || "";
                 let pass = uData.pass || "";
                 let proof = uData.proof || "";
-
-                if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
-                    streak = 0;
-                    database.ref(`usersData/${user.id}/streak`).set(0);
-                }
 
                 const isDoneToday = (lastDate === today);
                 const card = document.createElement("div");
