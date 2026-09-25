@@ -95,6 +95,21 @@
             margin-bottom: 10px;
             text-align: center;
         }
+
+        .reset-all-btn {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            margin-top: 40px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            width: auto;
+            border-radius: 20px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+        .reset-all-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
     </style>
 
     <!-- Firebase SDK Libraries -->
@@ -110,6 +125,8 @@
     </header>
 
     <main class="cards-container" id="cardsContainer"></main>
+
+    <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (تصفير الكل)</button>
 
     <script>
         const firebaseConfig = {
@@ -131,7 +148,7 @@
             { id: "user2", name: "الإمبراطورة", icon: "👸" }
         ];
 
-        // قائمة عقابات خفيفة ومقدور عليها (تظهر عند تفويت يوم)
+        // قائمة عقابات خفيفة عند تفويت يوم
         const punishments = [
             "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
             "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
@@ -147,7 +164,7 @@
             "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
         ];
 
-        // قائمة عبارات تحفيزية ومتنوعة جداً عند التسجيل
+        // قائمة عبارات تحفيزية متغيرة
         const motivations = [
             "كفووو! الملوك لا يتراجعون، إنجاز مذهل اليوم! 🔥👑",
             "استمراريتك هي سر عظمتك.. استمر في التماسك! ✨⚔️",
@@ -167,7 +184,6 @@
             "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑"
         ];
 
-        // جلب تاريخ اليوم بالتوقيت المحلي (توقيت السعودية)
         function getToday() {
             const d = new Date();
             const year = d.getFullYear();
@@ -176,7 +192,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // جلب تاريخ الأمس بالتوقيت المحلي
         function getYesterday() {
             const d = new Date();
             d.setDate(d.getDate() - 1);
@@ -205,7 +220,6 @@
                 let proof = uData.proof || "";
                 let wasReset = false;
 
-                // إعادة تصفير العداد إذا مر يوم كامل بدون تسجيل
                 if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
                     streak = 0;
                     wasReset = true;
@@ -219,14 +233,13 @@
                 if (isDoneToday) {
                     card.innerHTML = `
                         <div class="card-icon">${user.icon}</div>
-                        <h2>${user.name}</h2>
+                        ` + "<h2>" + user.name + "</h2>" + `
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         <div class="status-done">✅ تم إنجاز المذاكرة الملكية اليوم!</div>
                         <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الإنجاز:</p>
                         <div class="proof-text">${proof}</div>
                     `;
                 } else {
-                    // اختيار عقاب عشوائي إذا يتصفّر العداد
                     const randomPunishment = punishments[Math.floor(Math.random() * punishments.length)];
                     const punishmentHTML = (wasReset || (lastDate && lastDate !== today && lastDate !== yesterday)) 
                         ? `<div class="punishment-box">${randomPunishment}</div>` 
@@ -234,7 +247,7 @@
 
                     card.innerHTML = `
                         <div class="card-icon">${user.icon}</div>
-                        <h2>${user.name}</h2>
+                        ` + "<h2>" + user.name + "</h2>" + `
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         ${punishmentHTML}
                         <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
@@ -277,6 +290,15 @@
             });
 
             alert(`${randomMotivation}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑`);
+        }
+
+        // دالة التصفير الشامل للجميع
+        function resetAllData() {
+            if (confirm("هل أنت تأكد من إرجاع كافة الستريكات للصفر والبدء من جديد؟")) {
+                database.ref('usersData').remove().then(() => {
+                    alert("تم تصفير جميع الستريكات والبدء من جديد بنجاح! 🚀👑");
+                });
+            }
         }
 
         function startMidnightTimer() {
