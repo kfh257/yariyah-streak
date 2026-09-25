@@ -84,6 +84,17 @@
             background: rgba(15, 23, 42, 0.9); padding: 12px; border-radius: 8px;
             font-size: 0.9rem; word-break: break-all; border-right: 3px solid var(--gold-accent);
         }
+
+        .punishment-box {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
     </style>
 
     <!-- Firebase SDK Libraries -->
@@ -120,9 +131,55 @@
             { id: "user2", name: "الإمبراطورة", icon: "👸" }
         ];
 
+        // قائمة عقابات خفيفة ومقدور عليها (تظهر عند تفويت يوم)
+        const punishments = [
+            "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
+            "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
+            "⚠️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
+            "⚠️ عقاب تفويت اليوم: رتب مكتبك ومكان مذاكرتك بالكامل قبل البدء 🧹✨",
+            "⚠️ عقاب تفويت اليوم: ادرس أول 25 دقيقة اليوم بدون أي استراحة أو تشتت ⏱️🔥",
+            "⚠️ عقاب تفويت اليوم: اكتب هدفك الأكاديمي الكبير في ورقة وثبتها قدامك 📝👑",
+            "⚠️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
+            "⚠️ عقاب تفويت اليوم: اترك أي مشروب سكري لليوم واكتفِ بالموية أو القهوة السادة ☕",
+            "⚠️ عقاب تفويت اليوم: اكتب قائمة بأهم 3 مهام تحتاجهما اليوم وانجزهم بالترتيب 📋",
+            "⚠️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
+            "⚠️ عقاب تفويت اليوم: ادرس لـ 45 دقيقة متواصلة بدون وضع الطيران بالجوال ✈️",
+            "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
+        ];
+
+        // قائمة عبارات تحفيزية ومتنوعة جداً عند التسجيل
+        const motivations = [
+            "كفووو! الملوك لا يتراجعون، إنجاز مذهل اليوم! 🔥👑",
+            "استمراريتك هي سر عظمتك.. استمر في التماسك! ✨⚔️",
+            "يوم جديد وإنجاز جديد يُضاف لإمبراطوريتك! 🏆💯",
+            "عاش! خطوات صغيرة يومياً تصنع الفارق الكبير! 🚀📚",
+            "الالتزام هو الفارق بين العادي والإمبراطوري! كفو عليك 🔥👑",
+            "فخورين فيك! المذاكرة اليوم أصبحت في الجيب 🎓🌟",
+            "قوة، تركيز، وإرادة سليمانية! واصل التحدي 💪🔥",
+            "سلسلة الـ Streak تستمر في الاشتعال! لا أحد يوقفك اليوم ⚡️👑",
+            "الإصرار يصنع المستحيل.. خطوة إمبراطورية جديدة بنجاح! 👑🎯",
+            "بطل! الانضباط هو الجسر بين أهدافك وإنجازاتك 🌉✨",
+            "عظمة على عظمة! المذاكرة اليوم تمت بأعلى مستوى 🔥📖",
+            "يوم آخر من الإنجاز يثبت أنك قد التحدي وبجدارة! 🏅🌟",
+            "كفو والله! التركيز والالتزام سمة الكبار دائماً 👑💪",
+            "استمر، الثمار القادمة ستكون أكبر من كل التوقعات! 🌳💎",
+            "مذهل! طاقة إيجابية وإنجاز يدرّس لليوم 🚀✨",
+            "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑"
+        ];
+
         // جلب تاريخ اليوم بالتوقيت المحلي (توقيت السعودية)
         function getToday() {
             const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // جلب تاريخ الأمس بالتوقيت المحلي
+        function getYesterday() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
@@ -138,6 +195,7 @@
             const container = document.getElementById("cardsContainer");
             container.innerHTML = "";
             const today = getToday();
+            const yesterday = getYesterday();
 
             users.forEach(user => {
                 const uData = cloudData[user.id] || {};
@@ -145,6 +203,14 @@
                 let lastDate = uData.lastDate || "";
                 let pass = uData.pass || "";
                 let proof = uData.proof || "";
+                let wasReset = false;
+
+                // إعادة تصفير العداد إذا مر يوم كامل بدون تسجيل
+                if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
+                    streak = 0;
+                    wasReset = true;
+                    database.ref(`usersData/${user.id}/streak`).set(0);
+                }
 
                 const isDoneToday = (lastDate === today);
                 const card = document.createElement("div");
@@ -160,10 +226,17 @@
                         <div class="proof-text">${proof}</div>
                     `;
                 } else {
+                    // اختيار عقاب عشوائي إذا يتصفّر العداد
+                    const randomPunishment = punishments[Math.floor(Math.random() * punishments.length)];
+                    const punishmentHTML = (wasReset || (lastDate && lastDate !== today && lastDate !== yesterday)) 
+                        ? `<div class="punishment-box">${randomPunishment}</div>` 
+                        : '';
+
                     card.innerHTML = `
                         <div class="card-icon">${user.icon}</div>
                         <h2>${user.name}</h2>
                         <div class="streak-num">🔥 ${streak} يوم</div>
+                        ${punishmentHTML}
                         <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
                         <textarea id="proof_${user.id}" placeholder="إثبات المذاكرة (ماذا أنجزت اليوم؟)..."></textarea>
                         <button onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
@@ -195,6 +268,7 @@
             }
 
             const today = getToday();
+            const randomMotivation = motivations[Math.floor(Math.random() * motivations.length)];
 
             database.ref(`usersData/${userId}`).update({
                 streak: currentStreak + 1,
@@ -202,7 +276,7 @@
                 proof: proofInput
             });
 
-            alert("كفو! تم تسجيل المذاكرة واحتساب الـ Streak السحابي الملكي 🔥👑");
+            alert(`${randomMotivation}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑`);
         }
 
         function startMidnightTimer() {
