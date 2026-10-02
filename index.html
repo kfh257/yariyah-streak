@@ -1,459 +1,375 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تعقب السلسلة - Streak Tracker</title>
-  <!-- Firebase App & Database SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الـ Streak الإمبراطوري للمذاكرة 👑</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 27, 46, 0.85);
+            --gold-accent: #d4af37;
+            --gold-glow: #f39c12;
+            --text-color: #f8fafc;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #05070c 0%, #111827 50%, #1e1b4b 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      background-color: #0f172a; /* خلفية داكنة سادة وهادئة */
-      color: #f8fafc;
-    }
+        header { text-align: center; margin-bottom: 30px; }
+        .crown-main { font-size: 3.5rem; margin-bottom: 5px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6)); }
+        h1 { color: var(--gold-accent); margin: 0 0 10px 0; font-size: 2.2rem; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4); }
 
-    .main-title {
-      color: #f8fafc;
-      font-size: 2rem;
-      margin-bottom: 30px;
-      text-align: center;
-      font-weight: 700;
-    }
+        .timer-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            display: inline-block;
+            backdrop-filter: blur(8px);
+        }
 
-    .cards-wrapper {
-      display: flex;
-      gap: 20px;
-      width: 100%;
-      max-width: 850px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+        .cards-container {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1100px;
+        }
 
-    .user-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 24px;
-      flex: 1;
-      min-width: 300px;
-      max-width: 400px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+        .user-card {
+            background: var(--card-bg);
+            border: 2px solid var(--gold-accent);
+            border-radius: 20px;
+            padding: 25px 20px;
+            width: 320px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.15);
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
 
-    .role-title {
-      font-size: 1.35rem;
-      color: #e2e8f0;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+        .card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 5px; }
+        .user-card h2 { text-align: center; margin: 0 0 10px 0; font-size: 1.6rem; }
+        .streak-num { font-size: 2.6rem; font-weight: bold; color: var(--gold-glow); text-align: center; margin: 10px 0; }
 
-    .motive-msg {
-      font-size: 0.85rem;
-      color: #38bdf8;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 5px;
-    }
+        input, textarea, button {
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
+            border: 1px solid #334155; background: rgba(15, 23, 42, 0.8);
+            color: white; box-sizing: border-box; font-family: inherit;
+        }
 
-    .streak-num {
-      font-size: 3.5rem;
-      font-weight: 800;
-      color: #f43f5e;
-      margin: 5px 0;
-    }
+        button {
+            background: linear-gradient(45deg, #d4af37, #f39c12);
+            color: #000; font-weight: bold; cursor: pointer; border: none; margin-top: 12px;
+        }
 
-    .last-proof {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      margin-bottom: 15px;
-      text-align: right;
-    }
+        .status-done {
+            color: #4ade80; font-weight: bold; text-align: center; padding: 8px;
+            background: rgba(74, 222, 128, 0.1); border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2);
+        }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+        .proof-text {
+            background: rgba(15, 23, 42, 0.9); padding: 12px; border-radius: 8px;
+            font-size: 0.9rem; word-break: break-all; border-right: 3px solid var(--gold-accent);
+        }
 
-    .input-field {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #fff;
-      font-size: 0.88rem;
-      outline: none;
-    }
+        .punishment-box {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-    .input-field:focus {
-      border-color: #38bdf8;
-    }
+        .reward-box {
+            background: rgba(244, 114, 182, 0.15);
+            border: 1px solid rgba(244, 114, 182, 0.4);
+            color: #fbcfe8;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
 
-    .input-field::placeholder {
-      color: #64748b;
-    }
+        .yuri-cheer {
+            color: #f472b6;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            text-shadow: 0 0 8px rgba(244, 114, 182, 0.5);
+        }
 
-    .btn-checkin {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 11px 18px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 12px;
-      width: 100%;
-    }
+        .reset-all-btn {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            margin-top: 40px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            width: auto;
+            border-radius: 20px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+        .reset-all-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
+    </style>
 
-    .btn-checkin:hover {
-      background: #1d4ed8;
-    }
-
-    .adjust-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: #0f172a;
-      padding: 6px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-    }
-
-    .btn-adjust {
-      background: #334155;
-      color: #f8fafc;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-adjust:hover {
-      background: #475569;
-    }
-
-    /* صندوق العقاب */
-    .penalty-box {
-      margin-top: 10px;
-      background: rgba(225, 29, 72, 0.1);
-      border: 1px dashed #f43f5e;
-      border-radius: 8px;
-      padding: 10px;
-      display: none;
-    }
-
-    .penalty-box h4 {
-      color: #fb7185;
-      font-size: 0.9rem;
-    }
-
-    .penalty-box p {
-      color: #f1f5f9;
-      font-size: 0.85rem;
-    }
-
-    /* صندوق المكافأة لـ يوري */
-    .reward-box {
-      margin-top: 10px;
-      background: rgba(236, 72, 153, 0.1);
-      border: 1px dashed #ec4899;
-      border-radius: 8px;
-      padding: 10px;
-      display: none;
-    }
-
-    .reward-box h4 {
-      color: #f472b6;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-
-    .reward-box p {
-      color: #f1f5f9;
-      font-size: 0.85rem;
-    }
-
-    /* العبارة الكبيرة أسفل الصفحة */
-    .motto-footer {
-      margin-top: 35px;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #fb7185;
-      text-align: center;
-    }
-  </style>
+    <!-- Firebase SDK Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <h1 class="main-title">🔥 تحدي الستريك اليومي</h1>
+    <header>
+        <div class="crown-main">👑</div>
+        <h1>تحدي الـ Streak الإمبراطوري للمذاكرة</h1>
+        <div id="timer" class="timer-box">جاري حساب الوقت المتبقي...</div>
+    </header>
 
-  <div class="cards-wrapper">
-    <!-- بطاقة خالد -->
-    <div class="user-card">
-      <div>
-        <div class="role-title">👑 خالد</div>
-        <div class="motive-msg" id="emperorMotive">"استمر يا بطل، الإنجاز يتطلب الالتزام!"</div>
-        <div class="streak-num" id="emperorStreak">0</div>
-        <p style="color: #94a3b8; font-size: 0.82rem; margin-bottom: 10px;" id="emperorStatus">جاري التحميل...</p>
-        
-        <div class="last-proof">
-          📌 <strong>إنجاز اليوم:</strong> <span id="emperorProofText">لا يوجد إنجاز مسجل</span>
-        </div>
+    <main class="cards-container" id="cardsContainer"></main>
 
-        <div class="penalty-box" id="emperorPenalty">
-          <h4>⚠️ عقاب إعادة السلسلة:</h4>
-          <p id="emperorPenaltyText"></p>
-        </div>
-      </div>
+    <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (تصفير الكل)</button>
 
-      <div style="margin-top: 10px;">
-        <div class="input-group">
-          <input type="password" id="emperorPass" class="input-field" placeholder="رمز المرور (Passcode)">
-          <input type="text" id="emperorProof" class="input-field" placeholder="وش سويت اليوم؟ (إثبات الإنجاز)">
-        </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrLwyl_kKN4Zq4PQ6JFTFKc4NAdDmR8RY",
+            authDomain: "yariyah-streak.firebaseapp.com",
+            databaseURL: "https://yariyah-streak-default-rtdb.firebaseio.com",
+            projectId: "yariyah-streak",
+            storageBucket: "yariyah-streak.firebasestorage.app",
+            messagingSenderId: "585593636126",
+            appId: "1:585593636126:web:73816052f9ab937fb9b50f"
+        };
 
-        <button class="btn-checkin" onclick="handleCheckIn('emperor')">تسجيل حضور اليوم ⚡</button>
-        
-        <div class="adjust-container">
-          <button class="btn-adjust" onclick="adjustStreak('emperor', -1)">-</button>
-          <span style="font-size: 0.82rem; color: #94a3b8;">تعديل الأيام</span>
-          <button class="btn-adjust" onclick="adjustStreak('emperor', 1)">+</button>
-        </div>
-      </div>
-    </div>
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    <!-- بطاقة يوري -->
-    <div class="user-card">
-      <div>
-        <div class="role-title">👑 يوري</div>
-        <div class="motive-msg" id="empressMotive">"كل يوم هو خطوة جديدة نحو هدفك العظيم!"</div>
-        <div class="streak-num" id="empressStreak">0</div>
-        <p style="color: #94a3b8; font-size: 0.82rem; margin-bottom: 10px;" id="empressStatus">جاري التحميل...</p>
-        
-        <div class="last-proof">
-          📌 <strong>إنجاز اليوم:</strong> <span id="empressProofText">لا يوجد إنجاز مسجل</span>
-        </div>
+        // قائمة المستخدمين
+        const users = [
+            { id: "user1", name: "الإمبراطور", icon: "👑" },
+            { id: "user2", name: "الإمبراطورة", icon: "👸" }
+        ];
 
-        <div class="penalty-box" id="empressPenalty">
-          <h4>⚠️ عقاب إعادة السلسلة:</h4>
-          <p id="empressPenaltyText"></p>
-        </div>
+        // مكافآت أنثوية كل 5 أيام
+        const feminineRewards = [
+            "🎁 مكافأة الـ 5 أيام: جلسة عناية واسترخاء ملكية للوجه والبشرة (Skincare Session)! 🧴✨",
+            "🎁 مكافأة الـ 5 أيام: طلب مشروب ماتشا بارد ولذيذ ومُميز أو القهوة المفضلة لكِ! 🍵💖",
+            "🎁 مكافأة الـ 5 أيام: باقة ورد رقيقة تجدد طاقتكِ وجمال مكانكِ! 🌸💐",
+            "🎁 مكافأة الـ 5 أيام: مشاهدة فيلمكِ أو حلقة مسلسلكِ المفضل بدون أي تأنيب ضمير! 🎬🍿",
+            "🎁 مكافأة الـ 5 أيام: شراء قطعة اكسسوار جديدة أو شيء لطيف كـ مكافأة لإنجازك! 💍✨",
+            "🎁 مكافأة الـ 5 أيام: ساعة كاملة للقراءة أو ممارسة هوايتك الأنثوية المفضلة براحة! 🎨📚"
+        ];
 
-        <div class="reward-box" id="empressRewardBox">
-          <h4>👑 مكافأة إنجاز الـ 5 أيام! 👑</h4>
-          <p id="empressRewardText"></p>
-        </div>
-      </div>
+        // قائمة عقابات خفيفة عند تفويت يوم
+        const punishments = [
+            "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
+            "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
+            "⚠️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
+            "⚠️ عقاب تفويت اليوم: رتب مكتبك ومكان مذاكرتك بالكامل قبل البدء 🧹✨",
+            "⚠️ عقاب تفويت اليوم: ادرس أول 25 دقيقة اليوم بدون أي استراحة أو تشتت ⏱️🔥",
+            "⚠️ عقاب تفويت اليوم: اكتب هدفك الأكاديمي الكبير في ورقة وثبتها قدامك 📝👑",
+            "⚠️️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
+            "⚠️ عقاب تفويت اليوم: اترك أي مشروب سكري لليوم واكتفِ بالموية أو القهوة السادة ☕",
+            "⚠️ عقاب تفويت اليوم: اكتب قائمة بأهم 3 مهام تحتاجهما اليوم وانجزهم بالترتيب 📋",
+            "⚠️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
+            "⚠️ عقاب تفويت اليوم: ادرس لـ 45 دقيقة متواصلة بدون وضع الطيران بالجوال ✈️",
+            "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
+        ];
 
-      <div style="margin-top: 10px;">
-        <div class="input-group">
-          <input type="password" id="empressPass" class="input-field" placeholder="رمز المرور (Passcode)">
-          <input type="text" id="empressProof" class="input-field" placeholder="وش سويت اليوم؟ (إثبات الإنجاز)">
-        </div>
+        // قائمة عبارات تحفيزية متغيرة
+        const motivations = [
+            "كفووو! الملوك لا يتراجعون، إنجاز مذهل اليوم! 🔥👑",
+            "استمراريتك هي سر عظمتك.. استمر في التماسك! ✨⚔️",
+            "يوم جديد وإنجاز جديد يُضاف لإمبراطوريتك! 🏆💯",
+            "عاش! خطوات صغيرة يومياً تصنع الفارق الكبير! 🚀📚",
+            "الالتزام هو الفارق بين العادي والإمبراطوري! كفو عليك 🔥👑",
+            "فخورين فيك! المذاكرة اليوم أصبحت في الجيب 🎓🌟",
+            "قوة، تركيز، وإرادة سليمانية! واصل التحدي 💪🔥",
+            "سلسلة الـ Streak تستمر في الاشتعال! لا أحد يوقفك اليوم ⚡️👑",
+            "الإصرار يصنع المستحيل.. خطوة إمبراطورية جديدة بنجاح! 👑🎯",
+            "بطل! الانضباط هو الجسر بين أهدافك وإنجازاتك 🌉✨",
+            "عظمة على عظمة! المذاكرة اليوم تمت بأعلى مستوى 🔥📖",
+            "يوم آخر من الإنجاز يثبت أنك قد التحدي وبجدارة! 🏅🌟",
+            "كفو والله! التركيز والالتزام سمة الكبار دائماً 👑💪",
+            "استمر، الثمار القادمة ستكون أكبر من كل التوقعات! 🌳💎",
+            "مذهل! طاقة إيجابية وإنجاز يدرّس لليوم 🚀✨",
+            "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑",
+            "استمري يوري يا بطله ✨👑"
+        ];
 
-        <button class="btn-checkin" onclick="handleCheckIn('empress')">تسجيل حضور اليوم ⚡</button>
-        
-        <div class="adjust-container">
-          <button class="btn-adjust" onclick="adjustStreak('empress', -1)">-</button>
-          <span style="font-size: 0.82rem; color: #94a3b8;">تعديل الأيام</span>
-          <button class="btn-adjust" onclick="adjustStreak('empress', 1)">+</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="motto-footer">
-    استمري يوري يا بطله 💖✨
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      databaseURL: "https://YOUR_FIREBASE_DATABASE_URL.firebaseio.com"
-    };
-    
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
-
-    const motives = [
-      "💪 الاستمرار هو سر النجاح الحقيقي!",
-      "🔥 خطوة اليوم تقربك من حلم الغد!",
-      "✨ لا تتوقف، أنت تصنع التاريخ الآن!",
-      "👑 العظمة لا تأتي إلا بالالتزام اليومي!",
-      "🌟 يوم جديد، فرصة جديدة للتألق!"
-    ];
-
-    const penalties = [
-      "🥛 شرب كاسين ماء بارد دفعة واحدة!",
-      "🧹 ترتيب وتنظيم المكتب بالكامل الآن.",
-      "🧘‍♂️ عمل 10 تمارين إطالة (استطالة) للجسم.",
-      "📱 إبعاد الهاتف عن مكان الدراسة لمدة 3 ساعات.",
-      "🚶‍♀️ المشي لمدة 10 دقائق في المنزل لتجديد الطاقة."
-    ];
-
-    const femaleRewards = [
-      "🍵 اطلبي مشروبك المفضّل (ماتشا دافئة أو باردة) واستمتعي بها!",
-      "💅 وقت الدلال: حطي مناكير بلونك المفضّل اليوم!",
-      "🎧 استمعي لبودكاست لطيف أو قائمة أغانيك المفضلة لمدة 20 دقيقة.",
-      "🍰 خذي استراحة واستمتعي بقطعة حلى تحبينها.",
-      "📖 اقرئي فصلًا واحدًا من كتابك أو روايتك المفضلة.",
-      "🕯️ ولّعي شمعة معطرة واسترخي لمدة 15 دقيقة في جو هادئ.",
-      "🧖‍♀️ ماسك سريع للوجه مع عناية بالبشرة واستجداء للهدوء.",
-      "🎬 شاهدي حلقة من مسلسلك المفضّل بدون أي شعور بالذنب!",
-      "🚶‍♀️ خذي جولة مشي قصيرة ولطيفة في الهواء الطلق مع مشروب هادئ.",
-      "✏️ ارسمي أو لوني أو مارسي هواية فنية تحبينها.",
-      "🌸 كافئي نفسك بورود طبيعية جميلة تزين غرفتك.",
-      "💆‍♀️ اعملي مساج خفيف للكتفين أو اليدين مع زيت معطر.",
-      "😴 خذي قيلولة خفيفة لملاقاة طاقة جديدة (30 دقيقة).",
-      "📞 مكالمة لطيفة مع صديقتك المفضلة لتبادل السوالف الممتعة.",
-      "✨ جربي تسريحة شعر جديدة ولطيفة تحسين فيها بالتغيير والجمال!"
-    ];
-
-    db.ref('usersData').on('value', (snapshot) => {
-      const data = snapshot.val() || {};
-      
-      const emperorData = data.emperor || { streak: 0, lastCheckIn: 0, proof: "" };
-      const empressData = data.empress || { streak: 0, lastCheckIn: 0, proof: "" };
-
-      document.getElementById('emperorStreak').innerText = emperorData.streak || 0;
-      document.getElementById('emperorStatus').innerText = emperorData.lastCheckIn ? "آخر تسجيل: " + new Date(emperorData.lastCheckIn).toLocaleDateString('ar-SA') : "لم يسجل بعد";
-      document.getElementById('emperorProofText').innerText = emperorData.proof || "لا يوجد إنجاز مسجل";
-      checkPenalty('emperor', emperorData.streak);
-
-      const empressStreak = empressData.streak || 0;
-      document.getElementById('empressStreak').innerText = empressStreak;
-      document.getElementById('empressStatus').innerText = empressData.lastCheckIn ? "آخر تسجيل: " + new Date(empressData.lastCheckIn).toLocaleDateString('ar-SA') : "لم تسجل بعد";
-      document.getElementById('empressProofText').innerText = empressData.proof || "لا يوجد إنجاز مسجل";
-      checkPenalty('empress', empressStreak);
-      checkEmpressReward(empressStreak);
-    });
-
-    function handleCheckIn(user) {
-      const passInput = document.getElementById(`${user}Pass`).value.trim();
-      const proofInput = document.getElementById(`${user}Proof`).value.trim();
-
-      if (!passInput) {
-        alert("يرجى إدخال رمز المرور الخاص بك!");
-        return;
-      }
-
-      if (!proofInput) {
-        alert("يرجى كتابة ما قمت به اليوم في خانة الإنجاز!");
-        return;
-      }
-
-      const userRef = db.ref(`usersData/${user}`);
-      userRef.once('value', (snapshot) => {
-        const currentData = snapshot.val() || { streak: 0, passcode: "" };
-
-        if (currentData.passcode && currentData.passcode !== passInput) {
-          alert("رمز المرور غير صحيح!");
-          return;
+        function getToday() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        const newStreak = (currentData.streak || 0) + 1;
-        
-        userRef.update({
-          streak: newStreak,
-          passcode: passInput,
-          proof: proofInput,
-          lastCheckIn: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        document.getElementById(`${user}Pass`).value = "";
-        document.getElementById(`${user}Proof`).value = "";
-
-        const randomMotive = motives[Math.floor(Math.random() * motives.length)];
-        document.getElementById(`${user}Motive`).innerText = randomMotive;
-
-        alert("تم تسجيل حضورك بنجاح! ⚡");
-      });
-    }
-
-    function adjustStreak(user, amount) {
-      const passInput = prompt("أدخل رمز المرور (Passcode) لتعديل الأيام:");
-      if (!passInput) return;
-
-      const userRef = db.ref(`usersData/${user}`);
-      userRef.once('value', (snapshot) => {
-        const currentData = snapshot.val() || { streak: 0, passcode: "" };
-
-        if (currentData.passcode && currentData.passcode !== passInput) {
-          alert("رمز المرور غير صحيح!");
-          return;
+        function getYesterday() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        let newStreak = (currentData.streak || 0) + amount;
-        if (newStreak < 0) newStreak = 0;
-        
-        userRef.update({
-          streak: newStreak
+        database.ref('usersData').on('value', (snapshot) => {
+            const cloudData = snapshot.val() || {};
+            renderUI(cloudData);
         });
 
-        alert("تم تعديل عدد الأيام بنجاح!");
-      });
-    }
+        function renderUI(cloudData) {
+            const container = document.getElementById("cardsContainer");
+            container.innerHTML = "";
+            const today = getToday();
+            const yesterday = getYesterday();
 
-    function checkPenalty(user, streak) {
-      const penaltyBox = document.getElementById(`${user}Penalty`);
-      const penaltyText = document.getElementById(`${user}PenaltyText`);
-      
-      if (streak === 0) {
-        const randomPenalty = penalties[Math.floor(Math.random() * penalties.length)];
-        penaltyText.innerText = randomPenalty;
-        penaltyBox.style.display = 'block';
-      } else {
-        penaltyBox.style.display = 'none';
-      }
-    }
+            users.forEach(user => {
+                const uData = cloudData[user.id] || {};
+                let streak = uData.streak || 0;
+                let lastDate = uData.lastDate || "";
+                let pass = uData.pass || "";
+                let proof = uData.proof || "";
+                let wasReset = false;
 
-    function checkEmpressReward(streak) {
-      const rewardBox = document.getElementById('empressRewardBox');
-      const rewardText = document.getElementById('empressRewardText');
+                if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
+                    streak = 0;
+                    wasReset = true;
+                    database.ref(`usersData/${user.id}/streak`).set(0);
+                }
 
-      if (streak > 0 && streak % 5 === 0) {
-        const rewardIndex = (Math.floor(streak / 5) - 1) % femaleRewards.length;
-        rewardText.innerText = femaleRewards[rewardIndex];
-        rewardBox.style.display = 'block';
-      } else {
-        rewardBox.style.display = 'none';
-      }
-    }
-  </script>
+                const isDoneToday = (lastDate === today);
+                const card = document.createElement("div");
+                card.className = "user-card";
+
+                // فحص شرط المكافأة الأنثوية كل 5 أيام (عند إتمام 5، 10، 15 يوم...)
+                let rewardHTML = "";
+                if (streak > 0 && streak % 5 === 0) {
+                    const rewardIndex = (Math.floor(streak / 5) - 1) % feminineRewards.length;
+                    rewardHTML = `<div class="reward-box">${feminineRewards[rewardIndex]}</div>`;
+                }
+
+                if (isDoneToday) {
+                    card.innerHTML = `
+                        <div class="card-icon">${user.icon}</div>
+                        <h2>${user.name}</h2>
+                        <div class="streak-num">🔥 ${streak} يوم</div>
+                        <div class="status-done">✅ تم إنجاز المذاكرة الملكية اليوم!</div>
+                        ${rewardHTML}
+                        <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الإنجاز:</p>
+                        <div class="proof-text">${proof}</div>
+                        <div class="yuri-cheer">استمري يوري يا بطله ✨👑</div>
+                    `;
+                } else {
+                    const randomPunishment = punishments[Math.floor(Math.random() * punishments.length)];
+                    const punishmentHTML = (wasReset || (lastDate && lastDate !== today && lastDate !== yesterday)) 
+                        ? `<div class="punishment-box">${randomPunishment}</div>` 
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="card-icon">${user.icon}</div>
+                        <h2>${user.name}</h2>
+                        <div class="streak-num">🔥 ${streak} يوم</div>
+                        ${punishmentHTML}
+                        ${rewardHTML}
+                        <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
+                        <textarea id="proof_${user.id}" placeholder="إثبات المذاكرة (ماذا أنجزت اليوم؟)..."></textarea>
+                        <button onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
+                        <div class="yuri-cheer">استمري يوري يا بطله ✨👑</div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function checkIn(userId, savedPass, currentStreak) {
+            const passInput = document.getElementById(`pass_${userId}`).value;
+            const proofInput = document.getElementById(`proof_${userId}`).value.trim();
+
+            if (!passInput) {
+                alert("أدخل كلمة السر الخاصة بك!");
+                return;
+            }
+
+            if (!savedPass) {
+                database.ref(`usersData/${userId}/pass`).set(passInput);
+            } else if (savedPass !== passInput) {
+                alert("كلمة السر خاطئة!");
+                return;
+            }
+
+            if (!proofInput) {
+                alert("اكتب دليل المذاكرة أولاً!");
+                return;
+            }
+
+            const today = getToday();
+            const newStreak = currentStreak + 1;
+            const randomMotivation = motivations[Math.floor(Math.random() * motivations.length)];
+
+            database.ref(`usersData/${userId}`).update({
+                streak: newStreak,
+                lastDate: today,
+                proof: proofInput
+            });
+
+            let extraRewardMsg = "";
+            if (newStreak % 5 === 0) {
+                const rewardIndex = (Math.floor(newStreak / 5) - 1) % feminineRewards.length;
+                extraRewardMsg = `\n\n🎉 إنجاز مذهل! وصلتِ لـ ${newStreak} أيام متتالية!\n${feminineRewards[rewardIndex]}`;
+            }
+
+            alert(`${randomMotivation}${extraRewardMsg}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑\nاستمري يوري يا بطله ✨👑`);
+        }
+
+        // دالة التصفير الشامل للجميع
+        function resetAllData() {
+            if (confirm("هل أنت تأكد من إرجاع كافة الستريكات للصفر والبدء من جديد؟")) {
+                database.ref('usersData').remove().then(() => {
+                    alert("تم تصفير جميع الستريكات والبدء من جديد بنجاح! 🚀👑");
+                });
+            }
+        }
+
+        function startMidnightTimer() {
+            function update() {
+                const now = new Date();
+                const midnight = new Date();
+                midnight.setHours(24, 0, 0, 0);
+
+                const diff = midnight - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById("timer").innerText = 
+                    `الوقت المتبقي لانتهاء اليوم: ${hours}س : ${mins}د : ${secs}ث`;
+            }
+            update();
+            setInterval(update, 1000);
+        }
+
+        startMidnightTimer();
+    </script>
 </body>
 </html>
