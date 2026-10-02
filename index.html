@@ -1,325 +1,238 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحدي الـ Streak الإمبراطوري للمذاكرة 👑</title>
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(22, 27, 46, 0.85);
-            --gold-accent: #d4af37;
-            --gold-glow: #f39c12;
-            --text-color: #f8fafc;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تعقب السلسلة - Study Streak Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #05070c 0%, #111827 50%, #1e1b4b 100%);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-        }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      /* خلفية خيالية لقلعة فرسان ملكية وخيول */
+      background: linear-gradient(rgba(18, 12, 31, 0.75), rgba(18, 12, 31, 0.85)),
+                  url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
 
-        header { text-align: center; margin-bottom: 30px; }
-        .crown-main { font-size: 3.5rem; margin-bottom: 5px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6)); }
-        h1 { color: var(--gold-accent); margin: 0 0 10px 0; font-size: 2.2rem; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4); }
+    .container {
+      background: rgba(30, 22, 48, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 24px;
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.2);
+      text-align: center;
+    }
 
-        .timer-box {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: bold;
-            display: inline-block;
-            backdrop-filter: blur(8px);
-        }
+    h1 {
+      color: #f1c40f;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4);
+    }
 
-        .cards-container {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            max-width: 1100px;
-        }
+    .card {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        .user-card {
-            background: var(--card-bg);
-            border: 2px solid var(--gold-accent);
-            border-radius: 20px;
-            padding: 25px 20px;
-            width: 320px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.15);
-            backdrop-filter: blur(10px);
-            box-sizing: border-box;
-        }
+    .streak-display {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ff7675;
+      margin: 10px 0;
+      text-shadow: 0 0 15px rgba(255, 118, 117, 0.5);
+    }
 
-        .card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 5px; }
-        .user-card h2 { text-align: center; margin: 0 0 10px 0; font-size: 1.6rem; }
-        .streak-num { font-size: 2.6rem; font-weight: bold; color: var(--gold-glow); text-align: center; margin: 10px 0; }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
 
-        input, textarea, button {
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
-            border: 1px solid #334155; background: rgba(15, 23, 42, 0.8);
-            color: white; box-sizing: border-box; font-family: inherit;
-        }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
 
-        button {
-            background: linear-gradient(45deg, #d4af37, #f39c12);
-            color: #000; font-weight: bold; cursor: pointer; border: none; margin-top: 12px;
-        }
+    .btn-main {
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: white;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+    }
 
-        .status-done {
-            color: #4ade80; font-weight: bold; text-align: center; padding: 8px;
-            background: rgba(74, 222, 128, 0.1); border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2);
-        }
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+    }
 
-        .proof-text {
-            background: rgba(15, 23, 42, 0.9); padding: 12px; border-radius: 8px;
-            font-size: 0.9rem; word-break: break-all; border-right: 3px solid var(--gold-accent);
-        }
+    .btn-adjust {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffeaa7;
+      width: 40px;
+      height: 40px;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 234, 167, 0.3);
+    }
 
-        .punishment-box {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #fca5a5;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-            text-align: center;
-        }
+    .btn-adjust:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
 
-        .reset-all-btn {
-            background: transparent;
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            margin-top: 40px;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            width: auto;
-            border-radius: 20px;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.3s;
-        }
-        .reset-all-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
-    </style>
+    .reward-box {
+      margin-top: 20px;
+      background: linear-gradient(135deg, rgba(253, 121, 168, 0.2), rgba(225, 112, 85, 0.2));
+      border: 1px dashed #fd79a8;
+      border-radius: 16px;
+      padding: 15px;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
 
-    <!-- Firebase SDK Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    .reward-box h3 {
+      color: #fd79a8;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .reward-box p {
+      color: #ffeaa7;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .motto {
+      margin-top: 25px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ff7675;
+      text-shadow: 0 2px 10px rgba(255, 118, 117, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="crown-main">👑</div>
-        <h1>تحدي الـ Streak الإمبراطوري للمذاكرة</h1>
-        <div id="timer" class="timer-box">جاري حساب الوقت المتبقي...</div>
-    </header>
+  <div class="container">
+    <h1>⚔️ تعقب السلسلة - Study Streak ⚔️</h1>
 
-    <main class="cards-container" id="cardsContainer"></main>
+    <div class="card">
+      <h2>أيام الالتزام المتواصلة</h2>
+      <div class="streak-display" id="streakCount">0</div>
 
-    <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (تصفير الكل)</button>
+      <button class="btn-main" onclick="checkIn()">تسجيل حضور اليوم ⚡</button>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBrLwyl_kKN4Zq4PQ6JFTFKc4NAdDmR8RY",
-            authDomain: "yariyah-streak.firebaseapp.com",
-            databaseURL: "https://yariyah-streak-default-rtdb.firebaseio.com",
-            projectId: "yariyah-streak",
-            storageBucket: "yariyah-streak.firebasestorage.app",
-            messagingSenderId: "585593636126",
-            appId: "1:585593636126:web:73816052f9ab937fb9b50f"
-        };
+      <!-- أزرار تعديل الأيام يدوياً -->
+      <div class="controls">
+        <button class="btn-adjust" onclick="adjustStreak(-1)">-</button>
+        <span style="font-size: 0.9rem; color: #dcdde1;">تعديل الأيام</span>
+        <button class="btn-adjust" onclick="adjustStreak(1)">+</button>
+      </div>
+    </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    <!-- صندوق عرض المكافأة كل 5 أيام -->
+    <div class="reward-box" id="rewardBox">
+      <h3>👑 مكافأة إنجاز الـ 5 أيام! 👑</h3>
+      <p id="rewardText"></p>
+    </div>
 
-        // قائمة المستخدمين
-        const users = [
-            { id: "user1", name: "الإمبراطور", icon: "👑" },
-            { id: "user2", name: "الإمبراطورة", icon: "👸" }
-        ];
+    <!-- العبارة التشجيعية الكبيرة -->
+    <div class="motto">
+      استمري يوري يا بطله 💖✨
+    </div>
+  </div>
 
-        // قائمة عقابات خفيفة عند تفويت يوم
-        const punishments = [
-            "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
-            "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
-            "⚠️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
-            "⚠️ عقاب تفويت اليوم: رتب مكتبك ومكان مذاكرتك بالكامل قبل البدء 🧹✨",
-            "⚠️ عقاب تفويت اليوم: ادرس أول 25 دقيقة اليوم بدون أي استراحة أو تشتت ⏱️🔥",
-            "⚠️ عقاب تفويت اليوم: اكتب هدفك الأكاديمي الكبير في ورقة وثبتها قدامك 📝👑",
-            "⚠️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
-            "⚠️ عقاب تفويت اليوم: اترك أي مشروب سكري لليوم واكتفِ بالموية أو القهوة السادة ☕",
-            "⚠️ عقاب تفويت اليوم: اكتب قائمة بأهم 3 مهام تحتاجهما اليوم وانجزهم بالترتيب 📋",
-            "⚠️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
-            "⚠️ عقاب تفويت اليوم: ادرس لـ 45 دقيقة متواصلة بدون وضع الطيران بالجوال ✈️",
-            "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
-        ];
+  <script>
+    // قائمة الـ 15 مكافأة المتنوعة واللطيفة (بدون التركيز على الشراء)
+    const rewards = [
+      "🍵 اطلبي مشروبك المفضّل (ماتشا دافئة أو باردة) واستمتعي بها!",
+      "💅 وقت الدلال: حطي مناكير بلونك المفضّل اليوم!",
+      "🎧 استمعي لبودكاست لطيف أو قائمة أغانيك المفضلة لمدة 20 دقيقة.",
+      "🍰 خذي استراحة واستمتعي بقطعة حلى تحبينها.",
+      "📖 اقرئي فصلًا واحدًا من كتابك أو روايتك المفضلة.",
+      "🕯️ ولّعي شمعة معطرة واسترخي لمدة 15 دقيقة في جو هادئ.",
+      "🧖‍♀️ ماسك سريع للوجه مع عناية بالبشرة واستجداء للهدوء.",
+      "🎬 شادي حلقة من مسلسلك المفضّل بدون أي شعور بالذنب!",
+      "🚶‍♀️️ خذي جولة مشي قصيرة ولطيفة في الهواء الطلق مع مشروب هادئ.",
+      "✏️ ارسمي أو لوني أو مارسي هواية فنية تحبينها.",
+      "🌸 كافئي نفسك بورود طبيعية جميلة تزين غرفتك.",
+      "💆‍♀️ اعملي مساج خفيف للكتفين أو اليدين مع زيت معطر.",
+      "😴 خذي قيلولة خفيفة لملاقاة طاقة جديدة (30 دقيقة).",
+      "📞 مكالمة لطيفة مع صديقتك المفضلة لتبادل السوالف الممتعة.",
+      "✨ جربي تسريحة شعر جديدة ولطيفة تحسين فيها بالتغيير والجمال!"
+    ];
 
-        // قائمة عبارات تحفيزية متغيرة
-        const motivations = [
-            "كفووو! الملوك لا يتراجعون، إنجاز مذهل اليوم! 🔥👑",
-            "استمراريتك هي سر عظمتك.. استمر في التماسك! ✨⚔️",
-            "يوم جديد وإنجاز جديد يُضاف لإمبراطوريتك! 🏆💯",
-            "عاش! خطوات صغيرة يومياً تصنع الفارق الكبير! 🚀📚",
-            "الالتزام هو الفارق بين العادي والإمبراطوري! كفو عليك 🔥👑",
-            "فخورين فيك! المذاكرة اليوم أصبحت في الجيب 🎓🌟",
-            "قوة، تركيز، وإرادة سليمانية! واصل التحدي 💪🔥",
-            "سلسلة الـ Streak تستمر في الاشتعال! لا أحد يوقفك اليوم ⚡️👑",
-            "الإصرار يصنع المستحيل.. خطوة إمبراطورية جديدة بنجاح! 👑🎯",
-            "بطل! الانضباط هو الجسر بين أهدافك وإنجازاتك 🌉✨",
-            "عظمة على عظمة! المذاكرة اليوم تمت بأعلى مستوى 🔥📖",
-            "يوم آخر من الإنجاز يثبت أنك قد التحدي وبجدارة! 🏅🌟",
-            "كفو والله! التركيز والالتزام سمة الكبار دائماً 👑💪",
-            "استمر، الثمار القادمة ستكون أكبر من كل التوقعات! 🌳💎",
-            "مذهل! طاقة إيجابية وإنجاز يدرّس لليوم 🚀✨",
-            "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑"
-        ];
+    let currentStreak = parseInt(localStorage.getItem('userStreak')) || 0;
+    document.getElementById('streakCount').innerText = currentStreak;
 
-        function getToday() {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+    function updateDisplay() {
+      document.getElementById('streakCount').innerText = currentStreak;
+      localStorage.setItem('userStreak', currentStreak);
+      checkReward();
+    }
 
-        function getYesterday() {
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+    function checkIn() {
+      currentStreak++;
+      updateDisplay();
+    }
 
-        database.ref('usersData').on('value', (snapshot) => {
-            const cloudData = snapshot.val() || {};
-            renderUI(cloudData);
-        });
+    function adjustStreak(amount) {
+      currentStreak += amount;
+      if (currentStreak < 0) currentStreak = 0;
+      updateDisplay();
+    }
 
-        function renderUI(cloudData) {
-            const container = document.getElementById("cardsContainer");
-            container.innerHTML = "";
-            const today = getToday();
-            const yesterday = getYesterday();
+    function checkReward() {
+      const rewardBox = document.getElementById('rewardBox');
+      const rewardText = document.getElementById('rewardText');
 
-            users.forEach(user => {
-                const uData = cloudData[user.id] || {};
-                let streak = uData.streak || 0;
-                let lastDate = uData.lastDate || "";
-                let pass = uData.pass || "";
-                let proof = uData.proof || "";
-                let wasReset = false;
+      // تظهر المكافأة إذا كان العداد أعلى من 0 ومضاعفاً للرقم 5
+      if (currentStreak > 0 && currentStreak % 5 === 0) {
+        // اختيار مكافأة عشوائية بناءً على العداد
+        const selectedReward = rewards[(currentStreak / 5 - 1) % rewards.length];
+        rewardText.innerText = selectedReward;
+        rewardBox.style.display = 'block';
+      } else {
+        rewardBox.style.display = 'none';
+      }
+    }
 
-                if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
-                    streak = 0;
-                    wasReset = true;
-                    database.ref(`usersData/${user.id}/streak`).set(0);
-                }
-
-                const isDoneToday = (lastDate === today);
-                const card = document.createElement("div");
-                card.className = "user-card";
-
-                if (isDoneToday) {
-                    card.innerHTML = `
-                        <div class="card-icon">${user.icon}</div>
-                        ` + "<h2>" + user.name + "</h2>" + `
-                        <div class="streak-num">🔥 ${streak} يوم</div>
-                        <div class="status-done">✅ تم إنجاز المذاكرة الملكية اليوم!</div>
-                        <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الإنجاز:</p>
-                        <div class="proof-text">${proof}</div>
-                    `;
-                } else {
-                    const randomPunishment = punishments[Math.floor(Math.random() * punishments.length)];
-                    const punishmentHTML = (wasReset || (lastDate && lastDate !== today && lastDate !== yesterday)) 
-                        ? `<div class="punishment-box">${randomPunishment}</div>` 
-                        : '';
-
-                    card.innerHTML = `
-                        <div class="card-icon">${user.icon}</div>
-                        ` + "<h2>" + user.name + "</h2>" + `
-                        <div class="streak-num">🔥 ${streak} يوم</div>
-                        ${punishmentHTML}
-                        <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
-                        <textarea id="proof_${user.id}" placeholder="إثبات المذاكرة (ماذا أنجزت اليوم؟)..."></textarea>
-                        <button onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
-                    `;
-                }
-                container.appendChild(card);
-            });
-        }
-
-        function checkIn(userId, savedPass, currentStreak) {
-            const passInput = document.getElementById(`pass_${userId}`).value;
-            const proofInput = document.getElementById(`proof_${userId}`).value.trim();
-
-            if (!passInput) {
-                alert("أدخل كلمة السر الخاصة بك!");
-                return;
-            }
-
-            if (!savedPass) {
-                database.ref(`usersData/${userId}/pass`).set(passInput);
-            } else if (savedPass !== passInput) {
-                alert("كلمة السر خاطئة!");
-                return;
-            }
-
-            if (!proofInput) {
-                alert("اكتب دليل المذاكرة أولاً!");
-                return;
-            }
-
-            const today = getToday();
-            const randomMotivation = motivations[Math.floor(Math.random() * motivations.length)];
-
-            database.ref(`usersData/${userId}`).update({
-                streak: currentStreak + 1,
-                lastDate: today,
-                proof: proofInput
-            });
-
-            alert(`${randomMotivation}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑`);
-        }
-
-        // دالة التصفير الشامل للجميع
-        function resetAllData() {
-            if (confirm("هل أنت تأكد من إرجاع كافة الستريكات للصفر والبدء من جديد؟")) {
-                database.ref('usersData').remove().then(() => {
-                    alert("تم تصفير جميع الستريكات والبدء من جديد بنجاح! 🚀👑");
-                });
-            }
-        }
-
-        function startMidnightTimer() {
-            function update() {
-                const now = new Date();
-                const midnight = new Date();
-                midnight.setHours(24, 0, 0, 0);
-
-                const diff = midnight - now;
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-                document.getElementById("timer").innerText = 
-                    `الوقت المتبقي لانتهاء اليوم: ${hours}س : ${mins}د : ${secs}ث`;
-            }
-            update();
-            setInterval(update, 1000);
-        }
-
-        startMidnightTimer();
-    </script>
+    // التحقق عند تحميل الصفحة
+    checkReward();
+  </script>
 </body>
 </html>
