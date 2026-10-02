@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تعقب السلسلة - Study Streak Tracker</title>
+  <title>تعقب السلسلة الملكي - Streak Tracker</title>
+  <!-- Firebase App & Database SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -15,170 +19,273 @@
     body {
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      /* خلفية خيالية لقلعة فرسان ملكية وخيول */
-      background: linear-gradient(rgba(18, 12, 31, 0.75), rgba(18, 12, 31, 0.85)),
+      /* خلفية القلعة والفرسان الملكية */
+      background: linear-gradient(rgba(15, 10, 25, 0.8), rgba(15, 10, 25, 0.88)),
                   url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
     }
 
-    .container {
-      background: rgba(30, 22, 48, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      border-radius: 24px;
-      padding: 30px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.2);
+    .main-title {
+      color: #f1c40f;
+      font-size: 2.2rem;
+      margin-bottom: 25px;
+      text-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
       text-align: center;
     }
 
-    h1 {
-      color: #f1c40f;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4);
+    .cards-wrapper {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .user-card {
+      background: rgba(30, 22, 48, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 20px;
+      padding: 25px;
+      flex: 1;
+      min-width: 300px;
+      max-width: 420px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .streak-display {
-      font-size: 3rem;
+    .role-title {
+      font-size: 1.5rem;
+      color: #ffeaa7;
+      margin-bottom: 10px;
+    }
+
+    .motive-msg {
+      font-size: 0.9rem;
+      color: #74b9ff;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .streak-num {
+      font-size: 3.5rem;
       font-weight: bold;
       color: #ff7675;
-      margin: 10px 0;
       text-shadow: 0 0 15px rgba(255, 118, 117, 0.5);
+      margin: 5px 0;
     }
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-
-    .btn-main {
+    .btn-checkin {
       background: linear-gradient(135deg, #6c5ce7, #a29bfe);
       color: white;
-      padding: 12px 24px;
-      font-size: 1.1rem;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+      margin-bottom: 15px;
+      width: 100%;
     }
 
-    .btn-main:hover {
+    .btn-checkin:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+    }
+
+    .adjust-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px;
+      border-radius: 10px;
     }
 
     .btn-adjust {
       background: rgba(255, 255, 255, 0.15);
       color: #ffeaa7;
-      width: 40px;
-      height: 40px;
-      font-size: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border: 1px solid rgba(255, 234, 167, 0.3);
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
     .btn-adjust:hover {
       background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
     }
 
-    .reward-box {
-      margin-top: 20px;
-      background: linear-gradient(135deg, rgba(253, 121, 168, 0.2), rgba(225, 112, 85, 0.2));
-      border: 1px dashed #fd79a8;
-      border-radius: 16px;
-      padding: 15px;
+    /* صندوق العقاب */
+    .penalty-box {
+      margin-top: 10px;
+      background: rgba(214, 48, 49, 0.2);
+      border: 1px dashed #ff7675;
+      border-radius: 12px;
+      padding: 10px;
       display: none;
-      animation: fadeIn 0.5s ease;
     }
 
-    .reward-box h3 {
+    .penalty-box h4 {
+      color: #ff7675;
+      font-size: 0.95rem;
+    }
+
+    .penalty-box p {
+      color: #ffeaa7;
+      font-size: 0.85rem;
+    }
+
+    /* صندوق المكافأة الخاص بـ يوري */
+    .reward-box {
+      margin-top: 10px;
+      background: linear-gradient(135deg, rgba(253, 121, 168, 0.25), rgba(225, 112, 85, 0.25));
+      border: 1px dashed #fd79a8;
+      border-radius: 12px;
+      padding: 12px;
+      display: none;
+    }
+
+    .reward-box h4 {
       color: #fd79a8;
-      font-size: 1.2rem;
-      margin-bottom: 8px;
+      font-size: 0.95rem;
+      margin-bottom: 5px;
     }
 
     .reward-box p {
       color: #ffeaa7;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
     }
 
-    .motto {
-      margin-top: 25px;
-      font-size: 1.4rem;
+    /* العبارة التشجيعية الكبيرة */
+    .motto-footer {
+      margin-top: 35px;
+      font-size: 1.8rem;
       font-weight: 800;
       color: #ff7675;
-      text-shadow: 0 2px 10px rgba(255, 118, 117, 0.4);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 15px;
+      text-shadow: 0 2px 12px rgba(255, 118, 117, 0.5);
+      text-align: center;
       letter-spacing: 0.5px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>⚔️ تعقب السلسلة - Study Streak ⚔️</h1>
+  <h1 class="main-title">⚔️ تحدي السلسلة الملكية ⚔️</h1>
 
-    <div class="card">
-      <h2>أيام الالتزام المتواصلة</h2>
-      <div class="streak-display" id="streakCount">0</div>
+  <div class="cards-wrapper">
+    <!-- بطاقة الإمبراطور -->
+    <div class="user-card">
+      <div>
+        <div class="role-title">👑 الإمبراطور (خالد)</div>
+        <div class="motive-msg" id="emperorMotive">"استمر يا بطل، الإنجاز يتطلب الالتزام!"</div>
+        <div class="streak-num" id="emperorStreak">0</div>
+        <p style="color: #dcdde1; font-size: 0.85rem; margin-bottom: 10px;" id="emperorStatus">جاري التحميل...</p>
+        
+        <!-- صندوق العقاب -->
+        <div class="penalty-box" id="emperorPenalty">
+          <h4>⚠️ عقاب إعادة السلسلة:</h4>
+          <p id="emperorPenaltyText"></p>
+        </div>
+      </div>
 
-      <button class="btn-main" onclick="checkIn()">تسجيل حضور اليوم ⚡</button>
-
-      <!-- أزرار تعديل الأيام يدوياً -->
-      <div class="controls">
-        <button class="btn-adjust" onclick="adjustStreak(-1)">-</button>
-        <span style="font-size: 0.9rem; color: #dcdde1;">تعديل الأيام</span>
-        <button class="btn-adjust" onclick="adjustStreak(1)">+</button>
+      <div style="margin-top: 15px;">
+        <button class="btn-checkin" onclick="handleCheckIn('emperor')">تسجيل حضور اليوم ⚡</button>
+        <div class="adjust-container">
+          <button class="btn-adjust" onclick="adjustStreak('emperor', -1)">-</button>
+          <span style="font-size: 0.85rem; color: #ffeaa7;">تعديل الأيام</span>
+          <button class="btn-adjust" onclick="adjustStreak('emperor', 1)">+</button>
+        </div>
       </div>
     </div>
 
-    <!-- صندوق عرض المكافأة كل 5 أيام -->
-    <div class="reward-box" id="rewardBox">
-      <h3>👑 مكافأة إنجاز الـ 5 أيام! 👑</h3>
-      <p id="rewardText"></p>
-    </div>
+    <!-- بطاقة الإمبراطورة -->
+    <div class="user-card">
+      <div>
+        <div class="role-title">👑 الإمبراطورة (يوري)</div>
+        <div class="motive-msg" id="empressMotive">"كل يوم هو خطوة جديدة نحو هدفك العظيم!"</div>
+        <div class="streak-num" id="empressStreak">0</div>
+        <p style="color: #dcdde1; font-size: 0.85rem; margin-bottom: 10px;" id="empressStatus">جاري التحميل...</p>
+        
+        <!-- صندوق العقاب -->
+        <div class="penalty-box" id="empressPenalty">
+          <h4>⚠️ عقاب إعادة السلسلة:</h4>
+          <p id="empressPenaltyText"></p>
+        </div>
 
-    <!-- العبارة التشجيعية الكبيرة -->
-    <div class="motto">
-      استمري يوري يا بطله 💖✨
+        <!-- صندوق المكافأة الخاص بـ يوري -->
+        <div class="reward-box" id="empressRewardBox">
+          <h4>👑 مكافأة إنجاز الـ 5 أيام! 👑</h4>
+          <p id="empressRewardText"></p>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <button class="btn-checkin" onclick="handleCheckIn('empress')">تسجيل حضور اليوم ⚡</button>
+        <div class="adjust-container">
+          <button class="btn-adjust" onclick="adjustStreak('empress', -1)">-</button>
+          <span style="font-size: 0.85rem; color: #ffeaa7;">تعديل الأيام</span>
+          <button class="btn-adjust" onclick="adjustStreak('empress', 1)">+</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- العبارة الكبيرة أسفل الصفحة -->
+  <div class="motto-footer">
+    استمري يوري يا بطله 💖✨
+  </div>
+
   <script>
-    // قائمة الـ 15 مكافأة المتنوعة واللطيفة (بدون التركيز على الشراء)
-    const rewards = [
+    const firebaseConfig = {
+      databaseURL: "https://YOUR_FIREBASE_DATABASE_URL.firebaseio.com"
+    };
+    
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // عبارات تشجيعية
+    const motives = [
+      "💪 الاستمرار هو سر النجاح الحقيقي!",
+      "🔥 خطوة اليوم تقربك من حلم الغد!",
+      "✨ لا تتوقف، أنت تصنع التاريخ الآن!",
+      "👑 العظمة لا تأتي إلا بالالتزام اليومي!",
+      "🌟 يوم جديد، فرصة جديدة للتألق!"
+    ];
+
+    // عقابات خفيفة ولطيفة
+    const penalties = [
+      "🥛 شرب كاسين ماء بارد دفعة واحدة!",
+      "🧹 ترتيب وتنظيم المكتب بالكامل الآن.",
+      "🧘‍♂️ عمل 10 تمارين إطالة (استطالة) للجسم.",
+      "📱 إبعاد الهاتف عن مكان الدراسة لمدة 3 ساعات.",
+      "🚶‍♀️️ المشي لمدة 10 دقائق في المنزل لتجديد الطاقة."
+    ];
+
+    // المكافآت الأنوثية لـ يوري
+    const femaleRewards = [
       "🍵 اطلبي مشروبك المفضّل (ماتشا دافئة أو باردة) واستمتعي بها!",
       "💅 وقت الدلال: حطي مناكير بلونك المفضّل اليوم!",
       "🎧 استمعي لبودكاست لطيف أو قائمة أغانيك المفضلة لمدة 20 دقيقة.",
@@ -186,8 +293,8 @@
       "📖 اقرئي فصلًا واحدًا من كتابك أو روايتك المفضلة.",
       "🕯️ ولّعي شمعة معطرة واسترخي لمدة 15 دقيقة في جو هادئ.",
       "🧖‍♀️ ماسك سريع للوجه مع عناية بالبشرة واستجداء للهدوء.",
-      "🎬 شادي حلقة من مسلسلك المفضّل بدون أي شعور بالذنب!",
-      "🚶‍♀️️ خذي جولة مشي قصيرة ولطيفة في الهواء الطلق مع مشروب هادئ.",
+      "🎬 شاهدي حلقة من مسلسلك المفضّل بدون أي شعور بالذنب!",
+      "🚶‍♀️ خذي جولة مشي قصيرة ولطيفة في الهواء الطلق مع مشروب هادئ.",
       "✏️ ارسمي أو لوني أو مارسي هواية فنية تحبينها.",
       "🌸 كافئي نفسك بورود طبيعية جميلة تزين غرفتك.",
       "💆‍♀️ اعملي مساج خفيف للكتفين أو اليدين مع زيت معطر.",
@@ -196,43 +303,80 @@
       "✨ جربي تسريحة شعر جديدة ولطيفة تحسين فيها بالتغيير والجمال!"
     ];
 
-    let currentStreak = parseInt(localStorage.getItem('userStreak')) || 0;
-    document.getElementById('streakCount').innerText = currentStreak;
+    db.ref('usersData').on('value', (snapshot) => {
+      const data = snapshot.val() || {};
+      
+      const emperorData = data.emperor || { streak: 0, lastCheckIn: 0 };
+      const empressData = data.empress || { streak: 0, lastCheckIn: 0 };
 
-    function updateDisplay() {
-      document.getElementById('streakCount').innerText = currentStreak;
-      localStorage.setItem('userStreak', currentStreak);
-      checkReward();
+      // تحديث الإمبراطور
+      document.getElementById('emperorStreak').innerText = emperorData.streak || 0;
+      document.getElementById('emperorStatus').innerText = emperorData.lastCheckIn ? "آخر تسجيل: " + new Date(emperorData.lastCheckIn).toLocaleDateString('ar-SA') : "لم يسجل بعد";
+      checkPenalty('emperor', emperorData.streak);
+
+      // تحديث الإمبراطورة
+      const empressStreak = empressData.streak || 0;
+      document.getElementById('empressStreak').innerText = empressStreak;
+      document.getElementById('empressStatus').innerText = empressData.lastCheckIn ? "آخر تسجيل: " + new Date(empressData.lastCheckIn).toLocaleDateString('ar-SA') : "لم تسجل بعد";
+      checkPenalty('empress', empressStreak);
+      checkEmpressReward(empressStreak);
+    });
+
+    function handleCheckIn(user) {
+      const userRef = db.ref(`usersData/${user}`);
+      userRef.once('value', (snapshot) => {
+        const currentData = snapshot.val() || { streak: 0 };
+        const newStreak = (currentData.streak || 0) + 1;
+        
+        userRef.update({
+          streak: newStreak,
+          lastCheckIn: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // تغيير العبارة التشجيعية عند التسجيل
+        const randomMotive = motives[Math.floor(Math.random() * motives.length)];
+        document.getElementById(`${user}Motive`).innerText = randomMotive;
+      });
     }
 
-    function checkIn() {
-      currentStreak++;
-      updateDisplay();
+    function adjustStreak(user, amount) {
+      const userRef = db.ref(`usersData/${user}`);
+      userRef.once('value', (snapshot) => {
+        const currentData = snapshot.val() || { streak: 0 };
+        let newStreak = (currentData.streak || 0) + amount;
+        if (newStreak < 0) newStreak = 0;
+        
+        userRef.update({
+          streak: newStreak
+        });
+      });
     }
 
-    function adjustStreak(amount) {
-      currentStreak += amount;
-      if (currentStreak < 0) currentStreak = 0;
-      updateDisplay();
+    function checkPenalty(user, streak) {
+      const penaltyBox = document.getElementById(`${user}Penalty`);
+      const penaltyText = document.getElementById(`${user}PenaltyText`);
+      
+      if (streak === 0) {
+        const randomPenalty = penalties[Math.floor(Math.random() * penalties.length)];
+        penaltyText.innerText = randomPenalty;
+        penaltyBox.style.display = 'block';
+      } else {
+        penaltyBox.style.display = 'none';
+      }
     }
 
-    function checkReward() {
-      const rewardBox = document.getElementById('rewardBox');
-      const rewardText = document.getElementById('rewardText');
+    function checkEmpressReward(streak) {
+      const rewardBox = document.getElementById('empressRewardBox');
+      const rewardText = document.getElementById('empressRewardText');
 
-      // تظهر المكافأة إذا كان العداد أعلى من 0 ومضاعفاً للرقم 5
-      if (currentStreak > 0 && currentStreak % 5 === 0) {
-        // اختيار مكافأة عشوائية بناءً على العداد
-        const selectedReward = rewards[(currentStreak / 5 - 1) % rewards.length];
-        rewardText.innerText = selectedReward;
+      if (streak > 0 && streak % 5 === 0) {
+        const rewardIndex = (Math.floor(streak / 5) - 1) % femaleRewards.length;
+        rewardText.innerText = femaleRewards[rewardIndex];
         rewardBox.style.display = 'block';
       } else {
         rewardBox.style.display = 'none';
       }
     }
-
-    // التحقق عند تحميل الصفحة
-    checkReward();
   </script>
 </body>
 </html>
