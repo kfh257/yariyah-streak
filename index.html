@@ -70,23 +70,6 @@
 
         .card-header h2 { margin: 0; font-size: 1.6rem; }
 
-        .edit-days-btn {
-            background: rgba(212, 175, 55, 0.2);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-        .edit-days-btn:hover { background: var(--gold-accent); color: #000; }
-
         .card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 5px; }
         .streak-num { font-size: 2.6rem; font-weight: bold; color: var(--gold-glow); text-align: center; margin: 10px 0; }
 
@@ -173,7 +156,7 @@
 
     <main class="cards-container" id="cardsContainer"></main>
 
-    <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (تصفير الكل)</button>
+    <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (إعادة التعيين لليوم 5)</button>
 
     <div class="yuri-cheer-large">استمري يوري يا بطله ✨👑</div>
 
@@ -191,7 +174,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // قائمة المستخدمين الثابتة (شخصين فقط)
+        // تحديد الشخصين بشكل صارم
         const users = [
             { id: "user1", name: "الإمبراطور", icon: "👑" },
             { id: "user2", name: "الإمبراطورة", icon: "👸" }
@@ -211,14 +194,14 @@
         const punishments = [
             "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
             "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
-            "⚠️️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
+            "⚠️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
             "⚠️ عقاب تفويت اليوم: رتب مكتبك ومكان مذاكرتك بالكامل قبل البدء 🧹✨",
             "⚠️ عقاب تفويت اليوم: ادرس أول 25 دقيقة اليوم بدون أي استراحة أو تشتت ⏱️🔥",
             "⚠️ عقاب تفويت اليوم: اكتب هدفك الأكاديمي الكبير في ورقة وثبتها قدامك 📝👑",
-            "⚠️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
+            "⚠️️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
             "⚠️ عقاب تفويت اليوم: اترك أي مشروب سكري لليوم واكتفِ بالموية أو القهوة السادة ☕",
             "⚠️ عقاب تفويت اليوم: اكتب قائمة بأهم 3 مهام تحتاجهما اليوم وانجزهم بالترتيب 📋",
-            "⚠️️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
+            "⚠️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
             "⚠️ عقاب تفويت اليوم: ادرس لـ 45 دقيقة متواصلة بدون وضع الطيران بالجوال ✈️",
             "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
         ];
@@ -267,24 +250,25 @@
 
         function renderUI(cloudData) {
             const container = document.getElementById("cardsContainer");
-            // تفريغ إجباري ومضمون قبل كل رسم لمنع تكرار البطاقات
-            container.replaceChildren();
+            container.innerHTML = ""; // تفريغ الحاوية
 
             const today = getToday();
             const yesterday = getYesterday();
 
             users.forEach(user => {
                 const uData = cloudData[user.id] || {};
-                let streak = uData.streak || 0;
+                
+                // البداية التلقائية من 5 أيام إذا لم تكن هناك قيمة مسجلة
+                let streak = (uData.streak !== undefined) ? uData.streak : 5;
                 let lastDate = uData.lastDate || "";
                 let pass = uData.pass || "";
                 let proof = uData.proof || "";
                 let wasReset = false;
 
                 if (lastDate && lastDate !== today && lastDate !== yesterday && streak > 0) {
-                    streak = 0;
+                    streak = 5; // العودة إلى اليوم الخامس عند التفويت
                     wasReset = true;
-                    database.ref(`usersData/${user.id}/streak`).set(0);
+                    database.ref(`usersData/${user.id}/streak`).set(5);
                 }
 
                 const isDoneToday = (lastDate === today);
@@ -300,7 +284,6 @@
                 const cardHeader = `
                     <div class="card-header">
                         <h2>${user.name}</h2>
-                        <button class="edit-days-btn" title="تعديل أيام الـ Streak" onclick="setManualStreak('${user.id}', ${streak})">✏️</button>
                     </div>
                 `;
 
@@ -375,25 +358,15 @@
             alert(`${randomMotivation}${extraRewardMsg}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑`);
         }
 
-        // دالة تحديد الأيام يدوياً (ترجيع الأيام)
-        function setManualStreak(userId, currentStreak) {
-            const newDays = prompt("أدخل عدد الأيام الجديد للـ Streak:", currentStreak);
-            if (newDays !== null && newDays !== "") {
-                const parsedDays = parseInt(newDays, 10);
-                if (!isNaN(parsedDays) && parsedDays >= 0) {
-                    database.ref(`usersData/${userId}/streak`).set(parsedDays);
-                    alert("تم تعديل عدد الأيام بنجاح! 🎯");
-                } else {
-                    alert("يرجى إدخال رقم صحيح!");
-                }
-            }
-        }
-
-        // دالة التصفير الشامل للجميع
+        // دالة تعيين البيانات وتحديد الـ Streak بالبداية من 5 أيام
         function resetAllData() {
-            if (confirm("هل أنت تأكد من إرجاع كافة الستريكات للصفر والبدء من جديد؟")) {
-                database.ref('usersData').remove().then(() => {
-                    alert("تم تصفير جميع الستريكات والبدء من جديد بنجاح! 🚀👑");
+            if (confirm("هل أنت تأكد من بدء تحدي جديد واحتساب الأيام ابتداءً من اليوم الخامس؟")) {
+                const initialData = {
+                    user1: { streak: 5, lastDate: "", proof: "" },
+                    user2: { streak: 5, lastDate: "", proof: "" }
+                };
+                database.ref('usersData').set(initialData).then(() => {
+                    alert("تم ضبط الأيام لتبدأ من اليوم الخامس بنجاح! 🚀👑");
                 });
             }
         }
