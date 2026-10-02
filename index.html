@@ -60,8 +60,34 @@
             box-sizing: border-box;
         }
 
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .card-header h2 { margin: 0; font-size: 1.6rem; }
+
+        .edit-days-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+        .edit-days-btn:hover { background: var(--gold-accent); color: #000; }
+
         .card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 5px; }
-        .user-card h2 { text-align: center; margin: 0 0 10px 0; font-size: 1.6rem; }
         .streak-num { font-size: 2.6rem; font-weight: bold; color: var(--gold-glow); text-align: center; margin: 10px 0; }
 
         input, textarea, button {
@@ -70,7 +96,7 @@
             color: white; box-sizing: border-box; font-family: inherit;
         }
 
-        button {
+        button.action-btn {
             background: linear-gradient(45deg, #d4af37, #f39c12);
             color: #000; font-weight: bold; cursor: pointer; border: none; margin-top: 12px;
         }
@@ -108,20 +134,11 @@
             font-weight: bold;
         }
 
-        .yuri-cheer {
-            color: #f472b6;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-top: 15px;
-            text-shadow: 0 0 8px rgba(244, 114, 182, 0.5);
-        }
-
         .reset-all-btn {
             background: transparent;
             border: 1px solid #ef4444;
             color: #fca5a5;
-            margin-top: 40px;
+            margin-top: 30px;
             padding: 8px 16px;
             font-size: 0.8rem;
             width: auto;
@@ -131,6 +148,15 @@
             transition: 0.3s;
         }
         .reset-all-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
+
+        .yuri-cheer-large {
+            color: #f472b6;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.8rem;
+            margin-top: 25px;
+            text-shadow: 0 0 12px rgba(244, 114, 182, 0.6);
+        }
     </style>
 
     <!-- Firebase SDK Libraries -->
@@ -148,6 +174,8 @@
     <main class="cards-container" id="cardsContainer"></main>
 
     <button class="reset-all-btn" onclick="resetAllData()">⚙️ بداية تحدي جديد (تصفير الكل)</button>
+
+    <div class="yuri-cheer-large">استمري يوري يا بطله ✨👑</div>
 
     <script>
         const firebaseConfig = {
@@ -182,17 +210,17 @@
         // قائمة عقابات خفيفة عند تفويت يوم
         const punishments = [
             "⚠️ عقاب تفويت اليوم: اشرب كاسين موية باردة دفعة واحدة للتركيز! 💧",
-            "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️‍♂️",
+            "⚠️ عقاب تفويت اليوم: سوي 10 ضغطات أو 15 سكوات لتجديد طاقتك! 🏋️️‍♂️",
             "⚠️ عقاب تفويت اليوم: ابعد الجوال عنك تماماً لمدة ساعة أثناء المذاكرة 📱❌",
             "⚠️ عقاب تفويت اليوم: رتب مكتبك ومكان مذاكرتك بالكامل قبل البدء 🧹✨",
             "⚠️ عقاب تفويت اليوم: ادرس أول 25 دقيقة اليوم بدون أي استراحة أو تشتت ⏱️🔥",
             "⚠️ عقاب تفويت اليوم: اكتب هدفك الأكاديمي الكبير في ورقة وثبتها قدامك 📝👑",
-            "⚠️️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
+            "⚠️ عقاب تفويت اليوم: تمشّى بالمكان لمدة 3 دقائق واغسل وجهك بموية باردة 🧊",
             "⚠️ عقاب تفويت اليوم: اترك أي مشروب سكري لليوم واكتفِ بالموية أو القهوة السادة ☕",
             "⚠️ عقاب تفويت اليوم: اكتب قائمة بأهم 3 مهام تحتاجهما اليوم وانجزهم بالترتيب 📋",
             "⚠️ عقاب تفويت اليوم: سوي تمارين إطالة (استطالة) لظهرك ورقبتك قبل تبدأ 🧘‍♂️",
             "⚠️ عقاب تفويت اليوم: ادرس لـ 45 دقيقة متواصلة بدون وضع الطيران بالجوال ✈️",
-            "⚠️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
+            "⚠️️ عقاب تفويت اليوم: جهّز كوب ماتشا أو شاهي ملكي وركّز في درسك الحالي 🍵👑"
         ];
 
         // قائمة عبارات تحفيزية متغيرة
@@ -212,8 +240,7 @@
             "كفو والله! التركيز والالتزام سمة الكبار دائماً 👑💪",
             "استمر، الثمار القادمة ستكون أكبر من كل التوقعات! 🌳💎",
             "مذهل! طاقة إيجابية وإنجاز يدرّس لليوم 🚀✨",
-            "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑",
-            "استمري يوري يا بطله ✨👑"
+            "ما شاء الله عليك! تثبت يومياً أن المستحيل كلمة غير موجودة بقاموسك 🔥👑"
         ];
 
         function getToday() {
@@ -262,23 +289,28 @@
                 const card = document.createElement("div");
                 card.className = "user-card";
 
-                // فحص شرط المكافأة الأنثوية كل 5 أيام (عند إتمام 5، 10، 15 يوم...)
                 let rewardHTML = "";
                 if (streak > 0 && streak % 5 === 0) {
                     const rewardIndex = (Math.floor(streak / 5) - 1) % feminineRewards.length;
                     rewardHTML = `<div class="reward-box">${feminineRewards[rewardIndex]}</div>`;
                 }
 
+                const cardHeader = `
+                    <div class="card-header">
+                        <h2>${user.name}</h2>
+                        <button class="edit-days-btn" title="تعديل أيام الـ Streak" onclick="setManualStreak('${user.id}', ${streak})">✏️</button>
+                    </div>
+                `;
+
                 if (isDoneToday) {
                     card.innerHTML = `
                         <div class="card-icon">${user.icon}</div>
-                        <h2>${user.name}</h2>
+                        ${cardHeader}
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         <div class="status-done">✅ تم إنجاز المذاكرة الملكية اليوم!</div>
                         ${rewardHTML}
                         <p style="font-size:0.85rem; margin-top:12px; color:var(--gold-accent);">إثبات الإنجاز:</p>
                         <div class="proof-text">${proof}</div>
-                        <div class="yuri-cheer">استمري يوري يا بطله ✨👑</div>
                     `;
                 } else {
                     const randomPunishment = punishments[Math.floor(Math.random() * punishments.length)];
@@ -288,14 +320,13 @@
 
                     card.innerHTML = `
                         <div class="card-icon">${user.icon}</div>
-                        <h2>${user.name}</h2>
+                        ${cardHeader}
                         <div class="streak-num">🔥 ${streak} يوم</div>
                         ${punishmentHTML}
                         ${rewardHTML}
                         <input type="password" id="pass_${user.id}" placeholder="كلمة السر الخاصة بك">
                         <textarea id="proof_${user.id}" placeholder="إثبات المذاكرة (ماذا أنجزت اليوم؟)..."></textarea>
-                        <button onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
-                        <div class="yuri-cheer">استمري يوري يا بطله ✨👑</div>
+                        <button class="action-btn" onclick="checkIn('${user.id}', '${pass}', ${streak})">تسجيل المذاكرة اليوم</button>
                     `;
                 }
                 container.appendChild(card);
@@ -339,7 +370,21 @@
                 extraRewardMsg = `\n\n🎉 إنجاز مذهل! وصلتِ لـ ${newStreak} أيام متتالية!\n${feminineRewards[rewardIndex]}`;
             }
 
-            alert(`${randomMotivation}${extraRewardMsg}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑\nاستمري يوري يا بطله ✨👑`);
+            alert(`${randomMotivation}${extraRewardMsg}\n\nتم تسجيل الإنجاز واحتساب الـ Streak! 🎉👑`);
+        }
+
+        // دالة تحديد الأيام يدوياً (ترجيع الأيام)
+        function setManualStreak(userId, currentStreak) {
+            const newDays = prompt("أدخل عدد الأيام الجديد للـ Streak:", currentStreak);
+            if (newDays !== null && newDays !== "") {
+                const parsedDays = parseInt(newDays, 10);
+                if (!isNaN(parsedDays) && parsedDays >= 0) {
+                    database.ref(`usersData/${userId}/streak`).set(parsedDays);
+                    alert("تم تعديل عدد الأيام بنجاح! 🎯");
+                } else {
+                    alert("يرجى إدخال رقم صحيح!");
+                }
+            }
         }
 
         // دالة التصفير الشامل للجميع
